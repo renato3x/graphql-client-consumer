@@ -29,7 +29,7 @@ function New() {
     };
 
     getProfiles();
-  });
+  }, []);
 
   const handleClick = (option: any) => {
     const selectedProfilesClone = JSON.parse(JSON.stringify(selectedProfiles));
