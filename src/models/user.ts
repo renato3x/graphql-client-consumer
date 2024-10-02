@@ -1,7 +1,7 @@
 import { Profile } from './profile';
 
 export interface User {
-  id?: number;
+  id?: number | string;
   name?: string;
   email?: string;
   profiles?: Profile[];
