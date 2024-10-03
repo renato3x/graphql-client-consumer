@@ -1,32 +1,22 @@
 import { Box, Button, Card, CardContent, CardHeader, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid2'
 import { useState } from 'react';
+import { GET_PROFILES } from '../../../../global/graphql/queries';
+import { Profile } from '../../../../models/profile';
+import { useMutation, useQuery } from '@apollo/client';
+import { User } from '../../../../models/user';
+import { UPDATE_USER } from '../../../../global/graphql/mutations';
+import UserDataViewer from '../../../common/UserDataViewer';
 
 function Update() {
+  const getProfileQuery = useQuery<{ profile: Profile[] }>(GET_PROFILES);
+  const [ updateUser, updateUserMutation ] = useMutation<{ updateUser: User }>(UPDATE_USER);
   const [ selectedProfiles, setSelectedProfiles ] = useState<any[]>([]);
-  const profiles = [
-    {
-      "id" : 1,
-      "name" : "common",
-      "label" : "Common"
-    },
-    {
-      "id" : 2,
-      "name" : "admin",
-      "label" : "Administrator"
-    },
-    {
-      "id" : 3,
-      "name" : "guest1",
-      "label" : "Guest"
-    },
-    {
-      "id" : 4,
-      "name" : "guest2",
-      "label" : "Guest"
-    }
-  ];
-  
+  const [ filters, setFilters ] = useState<User>({
+    id: '',
+    email: '',
+  });
+  const [ user, setUser ] = useState<Partial<User>>({});
 
   const handleClick = (option: any) => {
     const selectedProfilesClone = JSON.parse(JSON.stringify(selectedProfiles));
@@ -42,6 +32,39 @@ function Update() {
     setSelectedProfiles(selectedProfilesClone);
   };
 
+  const handleChangeFilters = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { target } = event;
+
+    setFilters({
+      ...filters,
+      [target.name]: target.value,
+    });
+  }
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { target } = event;
+
+    setUser({
+      ...user,
+      [target.name]: target.value,
+    });
+  }
+
+  const handleUserUpdate = async () => {
+    await updateUser({
+      variables: {
+        filters: {
+          id: filters.id ? Number(filters.id) : undefined,
+          email: filters.email ? filters.email : undefined,
+        },
+        data: {
+          ...user,
+          profiles: selectedProfiles.map((p) => ({ id: p.id }))
+        }
+      }
+    });
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
@@ -56,12 +79,18 @@ function Update() {
                     variant="outlined"
                     type="text"
                     size="small"
+                    value={filters.id}
+                    name="id"
+                    onChange={handleChangeFilters}
                   />
                   <TextField
                     label="E-mail"
                     variant="outlined"
                     type="email"
                     size="small"
+                    value={filters.email}
+                    name="email"
+                    onChange={handleChangeFilters}
                   />
                 </Stack>
               </CardContent>
@@ -70,23 +99,29 @@ function Update() {
               <CardHeader title="Update user"/>
               <CardContent>
                 <Stack spacing={2}>
-                  <TextField
+                <TextField
                     label="Name"
                     variant="outlined"
                     type="text"
                     size="small"
+                    name="name"
+                    onChange={handleChange}
                   />
                   <TextField
                     label="E-mail"
                     variant="outlined"
                     type="email"
                     size="small"
+                    name="email"
+                    onChange={handleChange}
                   />
                   <TextField
                     label="Password"
                     variant="outlined"
                     type="password"
                     size="small"
+                    name="password"
+                    onChange={handleChange}
                   />
                   <FormControl>
                     <InputLabel id="profile-select-label">Profiles</InputLabel>
@@ -99,14 +134,14 @@ function Update() {
                       multiple
                       renderValue={(selected) => selected.map((option) => `${option.id} - ${option.label}`).join(', ')}
                     >
-                      {profiles.map((profile, index) => (
+                      {getProfileQuery.data?.profile?.map((profile, index) => (
                         <MenuItem key={index} onClick={() => handleClick(profile)}>
                           {profile.id} - {profile.label}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
-                  <Button type="button" variant="contained" size="small">Update user</Button>
+                  <Button type="button" variant="contained" size="small" onClick={handleUserUpdate}>Update user</Button>
                 </Stack>
               </CardContent>
             </Card>
@@ -116,6 +151,7 @@ function Update() {
           <Card>
             <CardHeader title="Result"/>
             <CardContent>
+              {updateUserMutation.data?.updateUser && <UserDataViewer {...updateUserMutation.data.updateUser}/>}
             </CardContent>
           </Card>
         </Grid>
