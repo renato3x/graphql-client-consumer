@@ -1,5 +1,6 @@
-import { GET_PROFILES } from './profiles'
+import { GET_PROFILES, GET_PROFILE } from './profiles'
 
 export {
-  GET_PROFILES
+  GET_PROFILES,
+  GET_PROFILE
 }
