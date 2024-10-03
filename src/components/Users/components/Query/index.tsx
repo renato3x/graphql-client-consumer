@@ -5,25 +5,7 @@ import { graphql } from '../../../../global/graphql';
 import { ApolloError, gql } from '@apollo/client';
 import Error from '../../../common/Error';
 import { useState } from 'react';
-
-function UserDataViewer(props: User) {
-  return (
-    <Stack>
-      <Typography>
-        #: { props.id }
-      </Typography>
-      <Typography>
-        Name: { props.name }
-      </Typography>
-      <Typography>
-        Email: { props.email }
-      </Typography>
-      <Typography>
-        Profiles: { props?.profiles?.map((p) => p.label).join(', ') }
-      </Typography>
-    </Stack>
-  )
-}
+import UserDataViewer from '../../../common/UserDataViewer';
 
 function Query() {
   const [ queryForm, setQueryForm ] = useState<User>({
