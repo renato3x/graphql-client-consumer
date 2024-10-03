@@ -28,3 +28,16 @@ export const UPDATE_PROFILE = gql`
   }
   ${PROFILE_FRAGMENT}
 `;
+
+export const DELETE_PROFILE = gql`
+  mutation (
+    $filters: ProfileFilter!
+  ) {
+    deleteProfile(
+      filters: $filters
+    ) {
+      ...ProfileFields
+    }
+  }
+  ${PROFILE_FRAGMENT}
+`
