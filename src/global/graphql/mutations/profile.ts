@@ -12,4 +12,19 @@ export const CREATE_PROFILE = gql`
     }
   }
   ${PROFILE_FRAGMENT}
-`
+`;
+
+export const UPDATE_PROFILE = gql`
+  mutation (
+    $filters: ProfileFilter!
+    $data: ProfileInput!
+  ) {
+    updateProfile(
+      filters: $filters
+      data: $data
+    ) {
+      ...ProfileFields
+    }
+  }
+  ${PROFILE_FRAGMENT}
+`;
