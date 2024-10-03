@@ -15,3 +15,16 @@ export const UPDATE_USER = gql`
   }
   ${USER_FRAGMENT}
 `;
+
+export const DELETE_USER = gql`
+  mutation (
+    $filters: UserFilter!
+  ) {
+    deleteUser(
+      filters: $filters
+    ) {
+      ...UserFields
+    }
+  }
+  ${USER_FRAGMENT}
+`;
